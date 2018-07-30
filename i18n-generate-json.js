@@ -126,7 +126,7 @@ const functionName = argv.f || argv.functionName || '\\$t';
 const outputDirectory = argv.o || argv.output || 'lang';
 const languages = argv.l || argv.languages || 'en';
 const willTransformise = argv.t || argv.transformise || false;
-const sourceLanguage = argv.s || argv.sourceLanguage || false;
+const sourceLanguage = argv.s || argv.sourceLanguage || 'zh-CN';
 const autoTranslate = argv.a || argv.autotranslate || false;
 
 new i18nGenerateJson({
