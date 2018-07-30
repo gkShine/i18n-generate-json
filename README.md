@@ -27,7 +27,7 @@ It's actually not tied to i18n-webpack-plugin at all. In fact I use it with my o
 ```
 
 ## Install
-`npm i i18n-generate-json --save-dev`
+`npm i webpack-i18n-generate-json --save-dev`
 
 ## Run
 1. add a script (see example package.json)
