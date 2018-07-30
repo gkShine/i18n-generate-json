@@ -1,6 +1,6 @@
-# Generate translation json files for [i18n-webpack-plugin](https://github.com/webpack-contrib/i18n-webpack-plugin)
+# Generate translation json files for [vue-i18n](https://github.com/kazupon/vue-i18n)
 
-[i18n-webpack-plugin](https://github.com/webpack-contrib/i18n-webpack-plugin) is great, but making translation files can be a big manual job! This script will search your app and generate translation json files for you.
+[vue-i18n](https://github.com/kazupon/vue-i18n) is great, but making translation files can be a big manual job! This script will search your app and generate translation json files for you.
 It's actually not tied to i18n-webpack-plugin at all. In fact I use it with my own translation function that is called at runtime. For that reason I provide the option to make your keys transformed to snake-case. This is my personal preference.
 
 ## Basic Example
@@ -27,7 +27,7 @@ It's actually not tied to i18n-webpack-plugin at all. In fact I use it with my o
 ```
 
 ## Install
-`npm i webpack-i18n-generate --save-dev`
+`npm i i18n-generate-json --save-dev`
 
 ## Run
 1. add a script (see example package.json)
@@ -38,11 +38,11 @@ It's actually not tied to i18n-webpack-plugin at all. In fact I use it with my o
 - `-f, -functionName, default [\\$t]`
 - `-o, -outputDirectory, default [lang]`
 - `-l, -languages, default ['en']`
-- `-t, -transformise, default [false] : Transformises using lower snake case whilst preserving the * character to be used for variable substitution. e.g. the key for __('i have *number* ducks') is 'i_have_*number*_ducks'`
+- `-t, -transformise, default [false] : Transformises using lower snake case whilst preserving the * character to be used for variable substitution. e.g. the key for $t('i have *number* ducks') is 'i_have_*number*_ducks'`
 
 ## Advanced Example using lower-snake-case keys
 ```
-  import { transformise } from 'webpack-i18n-generate';
+  import { transformise } from 'i18n-generate-json';
 
   // custom translate function
   export function translate(translations, key) {
