@@ -8,6 +8,7 @@ const {transformise} = require('./index');
 class i18nGenerateJson {
   constructor(options) {
     this.options = _.extend({
+      base: '',
       from: [],
       to: '',
       languages: ['en'],
@@ -20,9 +21,10 @@ class i18nGenerateJson {
   }
 
   run() {
-    let path = this.options.from.join('|');
-    let ext = this.options.extensions.join('|');
-    glob(`@(${path})/**/*.@(${ext})`, {}, (err, files) => {
+    const { from, extensions, base } = this.options
+    let path = from.join('|');
+    let ext = extensions.join('|');
+    glob(`${base}/@(${path})/**/*.@(${ext})`, {}, (err, files) => {
       if (err) throw err;
       this.writeJSON(this.getText(files));
     });
@@ -30,19 +32,19 @@ class i18nGenerateJson {
 
   getText(files) {
     return _.compose(
-      _.compact,
-      _.uniq,
-      _.flatten,
-      _.map((file) => {
-        const text = fs.readFileSync(file, 'utf8');
-        const findTranslations = new RegExp(`\\W${this.options.functionName}\\(\\'([^\\']*)\\'(\\)|,)`, "g");
-        let result;
-        let array = [];
-        while (result = findTranslations.exec(text)) {
-          array.push(result[1]);
-        }
-        return array;
-      })
+        _.compact,
+        _.uniq,
+        _.flatten,
+        _.map((file) => {
+          const text = fs.readFileSync(file, 'utf8');
+          const findTranslations = new RegExp(`\\W${this.options.functionName}\\(\\'([^\\']*)\\'(\\)|,)`, "g");
+          let result;
+          let array = [];
+          while (result = findTranslations.exec(text)) {
+            array.push(result[1]);
+          }
+          return array;
+        })
     )(files);
   }
 
@@ -60,7 +62,7 @@ class i18nGenerateJson {
   writeJSON(value) {
     let timer, lock;
     let index = 0;
-    const languages = this.options.languages;
+    const { languages, base, to, willTransformise } = this.options;
     timer = setInterval(() => {
       if (lock) {
         return; //第一个还没执行完则返回
@@ -73,7 +75,7 @@ class i18nGenerateJson {
       let language = languages[index++];
       const localeText = this.getLocaleConfig(language);
       const foundMap = _.keyBy((str) => {
-        return this.options.willTransformise ? transformise(str) : str;
+        return willTransformise ? transformise(str) : str;
       })(value);
       const newTranslations = _.pickBy((v, key) => {
         const found = localeText[key];
@@ -82,13 +84,13 @@ class i18nGenerateJson {
       console.log(`${language}: new translations found\n`, _.keys(newTranslations));
       this.autoTranslateByBing((object) => {
         let newObject = Object.assign({},
-          localeText,
-          object
+            localeText,
+            object
         );
         newObject = this.sortObject(newObject);
         fs.writeFileSync(
-          `${this.options.to}/${language}.json`,
-          JSON.stringify(newObject, null, 2), 'utf8'
+            `${base}/${to}/${language}.json`,
+            JSON.stringify(newObject, null, 2), 'utf8'
         );
         lock = false;
       }, newTranslations, language);
@@ -97,9 +99,9 @@ class i18nGenerateJson {
 
   sortObject(obj) {
     return Object.keys(obj).sort().reduce((result, key) => (
-      Object.assign({}, result, {
-        [key]: obj[key],
-      })
+        Object.assign({}, result, {
+          [key]: obj[key],
+        })
     ), {});
   }
 
@@ -121,6 +123,7 @@ class i18nGenerateJson {
 }
 
 const argv = require('minimist')(process.argv.slice(2));
+const baseDir = argv.b || argv.baseDirectory;
 const dir = argv.d || argv.directory;
 const functionName = argv.f || argv.functionName || '\\$t';
 const outputDirectory = argv.o || argv.output || 'lang';
@@ -130,6 +133,7 @@ const sourceLanguage = argv.s || argv.sourceLanguage || 'zh-CN';
 const autoTranslate = argv.a || argv.autotranslate || false;
 
 new i18nGenerateJson({
+  base: baseDir.replace(/\/$/, ''),
   from: dir.split(' '),
   to: outputDirectory,
   languages: languages.split(' '),
