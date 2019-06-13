@@ -35,6 +35,7 @@ It's actually not tied to i18n-webpack-plugin at all. In fact I use it with my o
 
 ## Options
 - `-d, -directory, REQUIRED, default [none]`
+- `-b, -base directory, default [none]`
 - `-f, -functionName, default [\\$t]`
 - `-o, -outputDirectory, default [lang]`
 - `-l, -languages, default ['en']`
