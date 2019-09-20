@@ -3,7 +3,7 @@
 const fs = require('fs');
 const glob = require('glob');
 const _ = require('lodash/fp');
-const {transformise} = require('./index');
+const { transformise } = require('./index');
 
 class i18nGenerateJson {
   constructor(options) {
@@ -32,26 +32,26 @@ class i18nGenerateJson {
 
   getText(files) {
     return _.compose(
-        _.compact,
-        _.uniq,
-        _.flatten,
-        _.map((file) => {
-          const text = fs.readFileSync(file, 'utf8');
-          const findTranslations = new RegExp(`\\W${this.options.functionName}\\(\\'([^\\']*)\\'(\\)|,)`, "g");
-          let result;
-          let array = [];
-          while (result = findTranslations.exec(text)) {
-            array.push(result[1]);
-          }
-          return array;
-        })
+      _.compact,
+      _.uniq,
+      _.flatten,
+      _.map((file) => {
+        const text = fs.readFileSync(file, 'utf8');
+        const findTranslations = new RegExp(`\\W${this.options.functionName}\\(\\'([^\\']*)\\'(\\)|,)`, "g");
+        let result;
+        let array = [];
+        while (result = findTranslations.exec(text)) {
+          array.push(result[1]);
+        }
+        return array;
+      })
     )(files);
   }
 
   getLocaleConfig(language) {
     try {
-      let dir = this.options.to;
-      const content = fs.readFileSync(`${dir}/${language}.json`);
+      const { base, to } = this.options;
+      const content = fs.readFileSync(`${base}/${to}/${language}.json`);
       return JSON.parse(content);
     } catch (error) {
       console.warn(`No translation file exists for language "${language}"`);
@@ -84,13 +84,13 @@ class i18nGenerateJson {
       console.log(`${language}: new translations found\n`, _.keys(newTranslations));
       this.autoTranslateByBing((object) => {
         let newObject = Object.assign({},
-            localeText,
-            object
+          localeText,
+          object
         );
         newObject = this.sortObject(newObject);
         fs.writeFileSync(
-            `${base}/${to}/${language}.json`,
-            JSON.stringify(newObject, null, 2), 'utf8'
+          `${base}/${to}/${language}.json`,
+          JSON.stringify(newObject, null, 2), 'utf8'
         );
         lock = false;
       }, newTranslations, language);
@@ -99,9 +99,9 @@ class i18nGenerateJson {
 
   sortObject(obj) {
     return Object.keys(obj).sort().reduce((result, key) => (
-        Object.assign({}, result, {
-          [key]: obj[key],
-        })
+      Object.assign({}, result, {
+        [key]: obj[key],
+      })
     ), {});
   }
 
