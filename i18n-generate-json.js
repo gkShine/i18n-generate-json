@@ -3,7 +3,9 @@
 const fs = require('fs');
 const glob = require('glob');
 const _ = require('lodash/fp');
-const { transformise } = require('./index');
+const {
+  transformise
+} = require('./index');
 
 class i18nGenerateJson {
   constructor(options) {
@@ -21,7 +23,11 @@ class i18nGenerateJson {
   }
 
   run() {
-    const { from, extensions, base } = this.options
+    const {
+      from,
+      extensions,
+      base
+    } = this.options
     let path = from.join('|');
     let ext = extensions.join('|');
     glob(`${base}/@(${path})/**/*.@(${ext})`, {}, (err, files) => {
@@ -50,7 +56,10 @@ class i18nGenerateJson {
 
   getLocaleConfig(language) {
     try {
-      const { base, to } = this.options;
+      const {
+        base,
+        to
+      } = this.options;
       const content = fs.readFileSync(`${base}/${to}/${language}.json`);
       return JSON.parse(content);
     } catch (error) {
@@ -62,7 +71,13 @@ class i18nGenerateJson {
   writeJSON(value) {
     let timer, lock;
     let index = 0;
-    const { languages, base, to, willTransformise } = this.options;
+    const {
+      languages,
+      base,
+      to,
+      willTransformise,
+      autoTranslate
+    } = this.options;
     timer = setInterval(() => {
       if (lock) {
         return; //第一个还没执行完则返回
@@ -81,7 +96,15 @@ class i18nGenerateJson {
         const found = localeText[key];
         return !found;
       })(foundMap);
-      console.log(`${language}: new translations found\n`, _.keys(newTranslations));
+
+      console.log(`\n${language}: ${base}/${to}/${language}.json`)
+
+      let newTranslationsKeys = _.keys(newTranslations)
+      console.log(`${newTranslationsKeys.length} new item(s) added`);
+      if (newTranslationsKeys.length && autoTranslate) {
+        console.table(newTranslationsKeys)
+      }
+
       this.autoTranslateByBing((object) => {
         let newObject = Object.assign({},
           localeText,
@@ -92,9 +115,28 @@ class i18nGenerateJson {
           `${base}/${to}/${language}.json`,
           JSON.stringify(newObject, null, 2), 'utf8'
         );
+
+        if (language != sourceLanguage) {
+
+          const needTranslations = _.pickBy((v, key) => {
+            return key == (willTransformise ? transformise(v) : v);
+          })(newObject)
+
+          let needTranslationsKeys = _.keys(needTranslations)
+
+          if (needTranslationsKeys.length) {
+            console.log(`${needTranslationsKeys.length} item(s) need translations`);
+            console.table(needTranslationsKeys)
+          }
+
+        }
+
         lock = false;
       }, newTranslations, language);
+
     }, 1000);
+
+
   }
 
   sortObject(obj) {
@@ -123,7 +165,7 @@ class i18nGenerateJson {
 }
 
 const argv = require('minimist')(process.argv.slice(2));
-const baseDir = argv.b || argv.baseDirectory;
+const baseDir = argv.b || argv.baseDirectory || '.';
 const dir = argv.d || argv.directory;
 const functionName = argv.f || argv.functionName || '\\$t';
 const outputDirectory = argv.o || argv.output || 'lang';
