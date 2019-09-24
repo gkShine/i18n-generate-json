@@ -17,7 +17,9 @@ class i18nGenerateJson {
         autoTranslate: false,
         extensions: ['vue', 'js'],
         functionName: '\\$t',
-        willTransformise: false
+        willTransformise: false,
+        deleteExpired: false,
+        ignoreDefault: false
       },
       options
     )
@@ -74,7 +76,8 @@ class i18nGenerateJson {
       to,
       willTransformise,
       autoTranslate,
-      deleteExpired
+      deleteExpired,
+      ignoreDefault
     } = this.options
     timer = setInterval(() => {
       if (lock) {
@@ -123,7 +126,7 @@ class i18nGenerateJson {
             'utf8'
           )
 
-          if (language != sourceLanguage) {
+          if (language != sourceLanguage || ignoreDefault == false) {
             const needTranslations = _.pickBy((v, key) => {
               return (key == (willTransformise ? transformise(v) : v) || v === '')
             })(newObject)
@@ -189,6 +192,7 @@ const willTransformise = argv.t || argv.transformise || false
 const sourceLanguage = argv.s || argv.sourceLanguage || 'zh-CN'
 const autoTranslate = argv.a || argv.autotranslate || false
 const deleteExpired = argv.x || argv.deleteExpired || false
+const ignoreDefault = argv.g || argv.ignoreDefault || false
 
 new i18nGenerateJson({
   base: baseDir.replace(/\/$/, ''),
@@ -199,5 +203,6 @@ new i18nGenerateJson({
   functionName: functionName,
   sourceLanguage: sourceLanguage,
   willTransformise: willTransformise,
-  deleteExpired: deleteExpired
+  deleteExpired: deleteExpired,
+  ignoreDefault: ignoreDefault
 }).run()
