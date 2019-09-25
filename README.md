@@ -40,6 +40,7 @@ It's actually not tied to i18n-webpack-plugin at all. In fact I use it with my o
 - `-o, -outputDirectory, default [lang]`
 - `-l, -languages, default ['en']`
 - `-t, -transformise, default [false] : Transformises using lower snake case whilst preserving the * character to be used for variable substitution. e.g. the key for $t('i have *number* ducks') is 'i_have_*number*_ducks'`
+- `-x, -deleteExpired, default [false] : deletes unused translations`
 
 ## Advanced Example using lower-snake-case keys
 ```
