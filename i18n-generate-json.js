@@ -10,6 +10,7 @@ class i18nGenerateJson {
     this.options = _.extend(
       {
         base: '',
+        baseList: [],
         from: [],
         to: '',
         languages: ['en'],
@@ -26,10 +27,11 @@ class i18nGenerateJson {
   }
 
   run() {
-    const { from, extensions, base } = this.options
-    let path = from.join('|')
-    let ext = extensions.join('|')
-    glob(`${base}/@(${path})/**/*.@(${ext})`, {}, (err, files) => {
+    const { from, extensions, baseList } = this.options
+    const path = from.join('|')
+    const ext = extensions.join('|')
+    const base = baseList.join('|')
+    glob(`@(${base})/@(${path})/**/*.@(${ext})`, {}, (err, files) => {
       if (err) throw err
       this.writeJSON(this.getText(files))
     })
@@ -184,7 +186,7 @@ class i18nGenerateJson {
 
 const argv = require('minimist')(process.argv.slice(2))
 const baseDir = argv.b || argv.baseDirectory || '.'
-const dir = argv.d || argv.directory
+const dir = argv.d || argv.directory || '**'
 const functionName = argv.f || argv.functionName || '\\$t'
 const outputDirectory = argv.o || argv.output || 'lang'
 const languages = argv.l || argv.languages || 'en'
@@ -194,8 +196,10 @@ const autoTranslate = argv.a || argv.autotranslate || false
 const deleteExpired = argv.x || argv.deleteExpired || false
 const ignoreDefault = argv.g || argv.ignoreDefault || false
 
+const baseList = baseDir.replace(/\/$/, '').split(' ')
 new i18nGenerateJson({
-  base: baseDir.replace(/\/$/, ''),
+  base: baseList[0],
+  baseList: baseList,
   from: dir.split(' '),
   to: outputDirectory,
   languages: languages.split(' '),
