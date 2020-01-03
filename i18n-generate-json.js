@@ -17,7 +17,7 @@ class i18nGenerateJson {
         sourceLanguage: 'zh-CN',
         autoTranslate: false,
         extensions: ['vue', 'js'],
-        functionName: '\\$t',
+        functionName: '\\$t|\\i18n\\.t',
         willTransformise: false,
         deleteExpired: false,
         ignoreDefault: false
@@ -45,13 +45,13 @@ class i18nGenerateJson {
       _.map(file => {
         const text = fs.readFileSync(file, 'utf8')
         const findTranslations = new RegExp(
-          `\\W${this.options.functionName}\\(\\'([^\\']*)\\'(\\)|,)`,
+          `\\W(${this.options.functionName})\\(\\'([^\\']*)\\'(\\)|,)`,
           'g'
         )
         let result
         let array = []
         while ((result = findTranslations.exec(text))) {
-          array.push(result[1])
+          array.push(result[2])
         }
         return array
       })
@@ -187,7 +187,7 @@ class i18nGenerateJson {
 const argv = require('minimist')(process.argv.slice(2))
 const baseDir = argv.b || argv.baseDirectory || '.'
 const dir = argv.d || argv.directory || '**'
-const functionName = argv.f || argv.functionName || '\\$t'
+const functionName = argv.f || argv.functionName || '\\$t|\\i18n\\.t'
 const outputDirectory = argv.o || argv.output || 'lang'
 const languages = argv.l || argv.languages || 'en'
 const willTransformise = argv.t || argv.transformise || false
