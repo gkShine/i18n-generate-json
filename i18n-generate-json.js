@@ -69,6 +69,16 @@ class i18nGenerateJson {
     return {}
   }
 
+  getNeedTranslations(language, object) {
+    const { sourceLanguage, ignoreDefault } = this.options
+    if (language != sourceLanguage || ignoreDefault == false) {
+      return _.pickBy((v, key) => {
+        return (key == (willTransformise ? transformise(v) : v) || v === '')
+      })(object)
+    }
+    return {}
+  }
+
   writeJSON(value) {
     let timer, lock
     let index = 0
@@ -118,7 +128,7 @@ class i18nGenerateJson {
           report[i] = { state: 'new item added' }
       }
 
-      this.autoTranslateByBing(
+      this.autoTranslate(
         object => {
           let newObject = Object.assign({}, localeText, object)
           newObject = this.sortObject(newObject)
@@ -128,14 +138,8 @@ class i18nGenerateJson {
             'utf8'
           )
 
-          if (language != sourceLanguage || ignoreDefault == false) {
-            const needTranslations = _.pickBy((v, key) => {
-              return (key == (willTransformise ? transformise(v) : v) || v === '')
-            })(newObject)
-
-            for (let i in needTranslations) {
-              if (!report[i]) report[i] = { state: 'needs translation' }
-            }
+          for (let i in this.getNeedTranslations(language, newObject)) {
+            if (!report[i]) report[i] = { state: 'needs translation' }
           }
 
           if (Object.keys(report).length)
@@ -145,7 +149,7 @@ class i18nGenerateJson {
 
           lock = false
         },
-        newTranslations,
+        Object.assign(this.getNeedTranslations(language, localeText), newTranslations),
         language
       )
     }, 1000)
@@ -163,7 +167,7 @@ class i18nGenerateJson {
       )
   }
 
-  autoTranslateByBing(callback, object, to) {
+  autoTranslate(callback, object, to) {
     let count = Object.keys(object).length
     //源语言则直接返回，不翻译也直接返回
     if (
