@@ -13,10 +13,15 @@ class Input {
       input: process.stdin,
       output: process.stdout
     })
-    console.error(`当前语言为: ${from} => ${to}`)
-    console.warn(`特殊命令有: 退出(:exit) 跳过(:skip)`)
-    console.info(`直接输入翻译内容并回车!\n`)
-    this.ask(rl, 0)
+    rl.question('是否现在就翻译?(y/N):', (answer) => {
+      if (answer.toLocaleLowerCase() === 'y') {
+        console.info(`\n当前语言为: ${from} => ${to}\n特殊命令有: 退出(:exit) 跳过(:skip)\n直接输入翻译内容并回车即可保存!`)
+        this.ask(rl, 0)
+      } else {
+        rl.close()
+        this.finish()
+      }
+    })
   }
 
   ask(rl, index) {
@@ -26,7 +31,7 @@ class Input {
       return this.finish()
     }
     const key = keys[index]
-    rl.write(key)
+    rl.write(object[key])
     rl.question(key + '\n', (answer) => {
       switch (answer) {
         case ':exit':

@@ -118,8 +118,10 @@ class i18nGenerateJson {
 
       for (let i in localeText) {
         if (value.indexOf(i) < 0) {
-          if (deleteExpired) delete localeText[i]
-          else report[i] = { state: 'unused' }
+          if (deleteExpired) {
+            delete localeText[i]
+            report[i] = { state: 'removed' }
+          } else report[i] = { state: 'unused' }
         }
       }
 
