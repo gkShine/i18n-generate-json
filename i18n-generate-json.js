@@ -28,10 +28,11 @@ class i18nGenerateJson {
 
   run() {
     const { from, extensions, baseList } = this.options
-    const path = from.join('|')
+    let path = from.join('|')
+    path = path.length ? `@{${path}` : '**'
     const ext = extensions.join('|')
     const base = baseList.join('|')
-    glob(`@(${base})/@(${path})/**/*.@(${ext})`, {}, (err, files) => {
+    glob(`@(${base})/${path}/**/*.@(${ext})`, {}, (err, files) => {
       if (err) throw err
       this.writeJSON(this.getText(files))
     })
@@ -192,7 +193,7 @@ class i18nGenerateJson {
 
 const argv = require('minimist')(process.argv.slice(2))
 const baseDir = argv.b || argv.baseDirectory || '.'
-const dir = argv.d || argv.directory || '**'
+const dir = argv.d || argv.directory || ''
 const functionName = argv.f || argv.functionName || '\\$t|\\i18n\\.t'
 const outputDirectory = argv.o || argv.output || 'lang'
 const languages = argv.l || argv.languages || 'en'
