@@ -16,8 +16,8 @@ class i18nGenerateJson {
         languages: ['en'],
         sourceLanguage: 'zh-CN',
         autoTranslate: false,
-        extensions: ['vue', 'js'],
-        functionName: '\\$t|\\i18n\\.t',
+        extensions: ['vue', 'js', 'ts', 'jsx'],
+        functionName: '\\$t|\\i18n.*\\.t',
         willTransformise: false,
         deleteExpired: false,
         ignoreDefault: false
@@ -195,7 +195,7 @@ class i18nGenerateJson {
 const argv = require('minimist')(process.argv.slice(2))
 const baseDir = argv.b || argv.baseDirectory || '.'
 const dir = argv.d || argv.directory || ''
-const functionName = argv.f || argv.functionName || '\\$t|\\i18n\\.t'
+const functionName = argv.f || argv.functionName || '\\$t|\\i18n.*\\.t'
 const outputDirectory = argv.o || argv.output || 'lang'
 const languages = argv.l || argv.languages || 'en'
 const willTransformise = argv.t || argv.transformise || false
