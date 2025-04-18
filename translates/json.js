@@ -17,6 +17,7 @@ class JSONF {
     rl.question('是否现在就翻译?(y/N):', (answer) => {
       if (answer.toLocaleLowerCase() === 'y') {
         console.info(`\n当前语言为: ${from} => ${to}\n特殊命令有: 退出(:exit)\n`)
+        console.info(object)
         this.ask(rl)
       } else {
         rl.close()
