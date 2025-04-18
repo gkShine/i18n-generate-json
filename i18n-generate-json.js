@@ -20,7 +20,8 @@ class i18nGenerateJson {
         functionName: '\\$t|\\i18n[^\\(]*\\.t',
         willTransformise: false,
         deleteExpired: false,
-        ignoreDefault: false
+        ignoreDefault: false,
+        reportType: 'table'
       },
       options
     )
@@ -142,13 +143,21 @@ class i18nGenerateJson {
           )
 
           for (let i in this.getNeedTranslations(language, newObject)) {
-            if (!report[i]) report[i] = { state: 'needs translation' }
+            if (!report[i]) report[i] = i
           }
 
-          if (Object.keys(report).length)
-            console.table(report)
-          else
+          if (Object.keys(report).length) {
+            if (reportType === 'json') {
+              console.log(report)
+            } else {
+              for (let i in report) {
+                report[i] = { state: 'needs translation' }
+              }
+              console.table(report)
+            }
+          } else {
             console.log('No issues')
+          }
 
           lock = false
         },
@@ -199,9 +208,10 @@ const outputDirectory = argv.o || argv.output || 'lang'
 const languages = argv.l || argv.languages || 'en'
 const willTransformise = argv.t || argv.transformise || false
 const sourceLanguage = argv.s || argv.sourceLanguage || 'zh-CN'
-const autoTranslate = argv.a || argv.autotranslate || false
+const autoTranslate = argv.a || argv.autoTranslate || false
 const deleteExpired = argv.x || argv.deleteExpired || false
 const ignoreDefault = argv.g || argv.ignoreDefault || false
+const reportType = argv.r || argv.reportType || 'table'
 
 const baseList = baseDir.replace(/\/$/, '').split(' ')
 new i18nGenerateJson({
@@ -215,5 +225,6 @@ new i18nGenerateJson({
   sourceLanguage: sourceLanguage,
   willTransformise: willTransformise,
   deleteExpired: deleteExpired,
-  ignoreDefault: ignoreDefault
+  ignoreDefault: ignoreDefault,
+  reportType: reportType
 }).run()
