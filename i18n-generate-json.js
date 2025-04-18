@@ -143,16 +143,16 @@ class i18nGenerateJson {
           )
 
           for (let i in this.getNeedTranslations(language, newObject)) {
-            if (!report[i]) report[i] = i
+            if (!report[i]) report[i] = { state: 'needs translation' }
           }
 
           if (Object.keys(report).length) {
             if (reportType === 'json') {
-              console.log(report)
-            } else {
               for (let i in report) {
-                report[i] = { state: 'needs translation' }
+                report[i] = report[i].state
               }
+              console.info(report)
+            } else {
               console.table(report)
             }
           } else {

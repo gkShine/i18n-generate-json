@@ -1,6 +1,6 @@
 {
   "name": "webpack-i18n-generate-json",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "generate i18n to json file",
   "main": "index.js",
   "scripts": {
