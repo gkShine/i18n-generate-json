@@ -1,6 +1,6 @@
 {
   "name": "webpack-i18n-generate-json",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "generate i18n to json file",
   "main": "index.js",
   "scripts": {
@@ -24,7 +24,7 @@
   "author": "shine <ls@gokuai.cn>",
   "license": "MIT",
   "devDependencies": {
-    "glob": "^10.3.4",
+    "glob": "^11.0.1",
     "lodash": "^4.17.10",
     "minimist": "^1.2.0"
   }

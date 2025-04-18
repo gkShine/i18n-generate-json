@@ -33,8 +33,7 @@ class i18nGenerateJson {
     const ext = extensions.join('|')
     let base = baseList.join('|')
     base = baseList.length > 1 ? `@(${base})` : base
-    glob(`${base}/${path}/**/*.@(${ext})`, {}, (err, files) => {
-      if (err) throw err
+    glob(`${base}/${path}/**/*.@(${ext})`).then(files => {
       this.writeJSON(this.getText(files))
     })
   }
