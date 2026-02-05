@@ -53,7 +53,9 @@ class i18nGenerateJson {
         let result
         let array = []
         while ((result = findTranslations.exec(text))) {
-          array.push(result[2])
+          if (!result[2].includes('.')) {
+            array.push(result[2])
+          }
         }
         return array
       })
