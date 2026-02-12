@@ -53,7 +53,7 @@ class i18nGenerateJson {
         let result
         let array = []
         while ((result = findTranslations.exec(text))) {
-          if (!result[2].includes('.')) {
+          if (!(/^(?=.*\.)[A-Za-z0-9\.\[\]]+$/.test(result[2]))) {
             array.push(result[2])
           }
         }
